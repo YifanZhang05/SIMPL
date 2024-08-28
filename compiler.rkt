@@ -1,4 +1,7 @@
 #lang racket
+
+(provide compile-simpl)
+
 ;; Compiler that converts SIMPL to A-PRIMPL
 ;; For more information about SIMPL and A-PRIMPL, see README
 ;; This compiler doesn't support functions.

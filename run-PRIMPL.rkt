@@ -1,4 +1,9 @@
 #lang racket
+
+(provide load-primpl)
+(provide run-primpl)
+(provide out)
+
 ;; This program runs PRIMPL code
 ;; How to use:
 ;    Step 1. call (load-primpl inst-lst), where inst-lst is a list of instructions
@@ -11,6 +16,9 @@
     2
     0
     0))
+
+;; output stream
+(define out (open-output-string))
 
 ;; size of memory of the machine it simulates
 (define MEM-SIZE 10000)
@@ -30,6 +38,7 @@
 ;; takes a list of PRIMPL instructions, initialize halted? flag, pc, and memory. Load instructions to memory
 ;; return void
 (define (load-primpl prog-lst)
+  (set! out (open-output-string))
   (set! pc 0)
   (set! halted? false)
   (vector-fill! mem 0)
@@ -90,12 +99,12 @@
 
 ;; print string
 (define (print-string s)
-  (printf "~a" s))
+  (write s out))
 
 ;; print value (immediate or value at memory loc)
 (define (print-val op)
   (define val (get-op-imm-or-mem op))
-  (printf "~a" val))
+  (write val out))
 
 ;; binary number operation instruction with parameters src1 and src2, store result in dest
 (define ((bin-num-op op) dest src1 src2)

@@ -1,4 +1,7 @@
 #lang racket
+
+(provide primplify)
+
 ;; assembler that converts A-PRIMPL to PRIMPL. For more information about A-PRIMPL and PRIMPL, see README
 ;; usage: call (primplify lst), where lst is a list of A-PRIMPL instructions.
 ;; here's an example of a list of A-PRIMPL instructions (it computes 1+2):

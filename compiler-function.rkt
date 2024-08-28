@@ -1,8 +1,11 @@
 #lang racket
+
+(provide compile-simpl-func)
+
 ;; Compiler that converts SIMPL-F (SIMPL-Function) to A-PRIMPL
 ;; SIMPL-F allows the use of functions. For more info, see README
 ;; Same use as compiler.rkt. Below is a SIMPL-F program that computes factorial of a x (here x=10, as shown in main)
-;; to compile this example program, call (compile-simpl example)
+;; to compile this example program, call (compile-simpl-func example)
 (define example
   '((fun (fact-h n acc)
          (vars []
@@ -20,7 +23,7 @@
 
 (define hash-arg-num (make-hash))
 
-(define (compile-simpl func-lst)
+(define (compile-simpl-func func-lst)
   (set! hash-arg-num (make-hash))
   (check-dup-fname func-lst empty)
   (define compile-other-func (compile-other func-lst empty))
@@ -313,4 +316,4 @@
    'div 'div
    'mod 'mod))
 
-;(compile-simpl example)
+;(compile-simpl-func example)
