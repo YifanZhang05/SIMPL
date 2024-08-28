@@ -1,19 +1,6 @@
 #lang web-server/insta
 
-(require "assembler.rkt")
-(require "compiler-function.rkt")
-(require "compiler.rkt")
-(require "run-PRIMPL.rkt")
-
-; compile given program written as a list
-(define (compile prog-lst)
-  (cond
-    [(empty? prog-lst) ""]
-    [true
-     (with-handlers ([exn:fail? (lambda (exn) "error\n")])
-       (begin (load-primpl (primplify (compile-simpl prog-lst)))
-              (run-primpl))
-       (get-output-string out))]))
+(require "execution.rkt")
 
 ; give a string, output html x-expression that display that string. Output is list
 (define (render-output output-str)
@@ -31,27 +18,69 @@
          read))
      ]))
 
-; takes a request, return input in the input area (such as textarea) with given name
+
+(struct input (execoption textarea))
+; takes a request, a input struct
+; exec-option: execution type as string, such as Run SIMPL, Run SIMPL-F, Compile SIMPL, etc.
+; textarea: input in the input textarea 
 ; name: symbol
-; output: string
-(define (get-input request name)
+; output: input struct
+(define (get-input request)
   (define req (request-bindings request))
-  (cond
-    [(exists-binding? name req)
-     (extract-binding/single name req)]
+  (define exec-op
+    (cond
+    [(exists-binding? 'options req)
+     (extract-binding/single 'options req)]
+    [true "Run SIMPL"]))
+  (define text-area
+    (cond
+    [(exists-binding? 'input req)
+     (extract-binding/single 'input req)]
     [true ""]))
+  (input exec-op text-area))
+
+; compile/assemble/execute text-in based on given exec-op
+; exec-op: string
+; text-in: string
+; return str
+(define (generate-output exec-op text-in)
+  (define text-input-lst (str->lst text-in))
+  (cond
+    [(equal? exec-op "Run SIMPL")
+     (run-SIMPL text-input-lst)]
+    [(equal? exec-op "Run SIMPL-F")
+     (run-SIMPL-F text-input-lst)]
+    [(equal? exec-op "Compile SIMPL")
+     (compile-SIMPL text-input-lst)]
+    [(equal? exec-op "Compile SIMPL-F")
+     (compile-SIMPL-F text-input-lst)]
+    [(equal? exec-op "Assemble A-PRIMPL")
+     (assemble-A-PRIMPL text-input-lst)]
+    [(equal? exec-op "Run PRIMPL")
+     (run-PRIMPL text-input-lst)]
+    [true
+     ""]
+    ))
 
 (define (start request)
-  (define input-str (get-input request 'input))
-  (define input-lst (str->lst input-str))
-  (define output (compile input-lst))
+  (define input (get-input request))    ; get input struct containing input in text area and execution option 
+  (define text-input-str (input-textarea (get-input request)))    ; get input in the text area
+  (define exec-option (input-execoption (get-input request)))   ; Get execute option: Run SIMPL, Run SIMPL-F, Compile SIMPL, etc.
+  (define output (generate-output exec-option text-input-str))    ; generate output based on exec-option and text input
   (response/xexpr
    `(html
-     [head (title "Run SIMPL")]
-     [h1 "Run SIMPL Code"]
+     [head (title ,exec-option)]
+     [h1 ,exec-option]
      [form
       (textarea ((name "input") (rows "20") (cols "75") (style "font-size: 20pt"))
-                ,input-str)
+                ,text-input-str)
+      (select ((name "options"))
+              (option ((value "Run SIMPL")) "Run SIMPL")
+              (option ((value "Run SIMPL-F")) "Run SIMPL-F")
+              (option ((value "Compile SIMPL")) "Compile SIMPL to A-PRIMPL")
+              (option ((value "Compile SIMPL-F")) "Compile SIMPL-F to A-PRIMPL")
+              (option ((value "Assemble A-PRIMPL")) "Assemble A-PRIMPL to PRIMPL")
+              (option ((value "Run PRIMPL")) "Run PRIMPL"))
       (input ((type "submit")))]
      ,(render-output output)
      )))
