@@ -7,5 +7,5 @@ This project includes the following: SIMPL compiler, SIMPL-F compiler, assembler
 More description about SIMPL, SIMPL-F, A-PRIMPL, and PRIMPL (for ex, syntax) coming soon...
 
 **How to use:**
-Run main.rkt will create a webpage. Enter the SIMPL code in the text box and click "submit" to run the code
+Run web-server.rkt will create a webpage. Enter the SIMPL code in the text box and click "submit" to run the code
 Currently, the webpage only support SIMPL (not SIMPL-F, PRIMPL, or A-PRIMPL)
