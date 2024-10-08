@@ -1,4 +1,4 @@
-p#lang racket
+#lang racket
 
 (provide compile-simpl)
 
