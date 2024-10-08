@@ -1,4 +1,4 @@
-#lang racket
+p#lang racket
 
 (provide compile-simpl)
 
@@ -11,7 +11,7 @@
 ;    Example: below, test is an S-expression representing SIMPL program that computes and print 2^10.
 ;             (compile-simpl test) compiles this program
 ;    After compiling, use assembler.rkt to assemble the program into PRIMPL, then use run-PRIMPL.rkt to run it. 
-(define test
+(define example
   '(vars [(x 10) (y 1)]
   (while (> x 0)
      (set y (* 2 y))
@@ -168,4 +168,4 @@
 (define (compile-simpl prog)
   (compile-statement prog empty))
 
-;(compile-simpl test)
+;(compile-simpl example)
